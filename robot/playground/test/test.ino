@@ -3,11 +3,11 @@ class Motor
 public:
   int enPin, pin1, pin2;
 
-  Motor(int enPinNr, int pin1Nr, int pin2Nr)
+  Motor(int enPinNum, int pin1Num, int pin2Num)
   {
-    enPin = enPinNr;
-    pin1 = pin1Nr;
-    pin2 = pin2Nr;
+    enPin = enPinNum;
+    pin1 = pin1Num;
+    pin2 = pin2Num;
   }
 
   void setup()
