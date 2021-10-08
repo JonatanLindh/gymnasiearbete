@@ -10,33 +10,47 @@ public:
     pin2 = pin2Num;
   }
 
+  enum Direction : int
+  {
+    Clockwise,
+    CounterClockwise,
+  };
+
   void setup()
   {
     pinMode(pin1, OUTPUT);
     pinMode(pin2, OUTPUT);
   }
 
-  void go(bool cc, int speed_control)
+  void start(Direction direction, int speed_control)
+  // void go(bool dir, int speed_control)
   {
     int high, low;
 
-    if (cc)
-    {
-      high = pin2;
-      low = pin1;
-    }
-
-    else
+    if (direction == Clockwise)
+    // if (dir)
     {
       high = pin1;
       low = pin2;
     }
 
-    int speed = map(speed_control, 0, pin2, 0, 255);
+    else
+    {
+      high = pin2;
+      low = pin1;
+    }
+
+    int speed = map(speed_control, 0, 9, 0, 255);
     analogWrite(enPin, speed);
 
     digitalWrite(low, LOW);
     digitalWrite(high, HIGH);
+  }
+  void stop()
+  {
+    digitalWrite(pin1, LOW);
+    digitalWrite(pin2, LOW);
+    analogWrite(enPin, 0);
   }
 };
 
@@ -51,6 +65,11 @@ void setup()
 
 void loop()
 {
-  leftMotor.go(false, 4);
-  rightMotor.go(true, 4);
+  rightMotor.start(Motor::Clockwise, 9);
+  delay(1500);
+  rightMotor.stop();
+
+  leftMotor.start(Motor::Clockwise, 9);
+  delay(1500);
+  leftMotor.stop();
 }
