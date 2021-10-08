@@ -54,7 +54,7 @@ public:
   }
 };
 
-Motor leftMotor = Motor(11, 12, 13);
+Motor leftMotor = Motor(9, 7, 8);
 Motor rightMotor = Motor(3, 2, 4);
 
 void setup()
@@ -65,11 +65,6 @@ void setup()
 
 void loop()
 {
-  rightMotor.start(Motor::Clockwise, 9);
-  delay(1500);
-  rightMotor.stop();
-
-  leftMotor.start(Motor::Clockwise, 9);
-  delay(1500);
-  leftMotor.stop();
+  rightMotor.start(Motor::CounterClockwise, 9);
+  leftMotor.start(Motor::CounterClockwise, 9);
 }
