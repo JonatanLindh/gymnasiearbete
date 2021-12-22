@@ -1,0 +1,6 @@
+{
+    "sketch": "src\\main.ino",
+    "board": "arduino:avr:uno",
+    "output": "./build",
+    "port": "COM4"
+}

@@ -1,3 +1,0 @@
-{
-    "rust-analyzer.cargo.target": "avr-specs/avr-atmega328p.json"
-}
