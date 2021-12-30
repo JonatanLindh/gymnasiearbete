@@ -1,5 +1,5 @@
 {
-    "sketch": "src\\main.ino",
+    "sketch": "src\\software_i2c_test.ino",
     "board": "arduino:avr:uno",
     "output": "./build",
     "port": "COM4"
