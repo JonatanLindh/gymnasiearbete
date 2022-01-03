@@ -3,3 +3,6 @@
 #define SDA_PIN 7
 #define SDA_PORT PORTK
 #include <SoftWire.h>
+
+void setup() {}
+void loop() {}
