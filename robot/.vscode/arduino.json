@@ -1,7 +1,7 @@
 {
-    "sketch": "src\\software_i2c_test.ino",
-    "board": "arduino:avr:mega",
-    "output": "./build",
-    "port": "COM4",
-    "configuration": "cpu=atmega2560"
+  "sketch": "src\\main.ino",
+  "board": "arduino:avr:mega",
+  "output": "./build",
+  "port": "COM4",
+  "configuration": "cpu=atmega2560"
 }

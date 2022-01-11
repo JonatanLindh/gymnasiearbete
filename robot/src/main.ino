@@ -1,38 +1,36 @@
 #include <Wire.h>
 #include <Adafruit_TCS34725.h>
 
-/*
- * Adafruit TCS34725 RGB Sensor Demo Code
- *
- * learnelectronics
- * 2 MAR 2018
- *
- * www.youtube.com/c/learnelectronics
- * www.patreon.com/learnelectronics
- * paypal.me/learnelectronics
- *
- * adapted from code by Adafruit
- */
-
-#define redpin 6    // pwm output for RED anode use 1K resistor
-#define greenpin 10 // pwm output for GREEN anode use 2K resistor
-#define bluepin 11  // pwm output for BLUE anode use 1K resistor
-
-#define commonAnode false // set to false if using a common cathode LED
-
 byte gammatable[256]; // our RGB -> eye-recognized gamma color
 
-// Create an instance of the TCS34725 Sensor
-Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+#define TCAADDR 0x70
 
-void setup()
+void tca_select(uint8_t i)
 {
-    Serial.begin(9600);                // Sart serial comms @ 9600 (you can change this)
-    Serial.println("Color View Test"); // Title info
+    if (i > 7)
+        return;
 
-    if (tcs.begin())
-    {                                   // if the sensor starts correctly
-        Serial.println("Found sensor"); // print the happy message
+    Wire.beginTransmission(TCAADDR);
+    Wire.write(1 << i);
+    Wire.endTransmission();
+}
+
+// Create an instance of the TCS34725 Sensor
+enum sensors
+{
+    left_color,
+    right_color,
+};
+
+Adafruit_TCS34725 color_sensors[] = {Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X), Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X)};
+
+void sensor_setup(sensors sensor)
+{
+    tca_select(sensor);
+    if (color_sensors[sensor].begin())
+    { // if the sensor starts correctly
+        Serial.print("Found sensor: ");
+        Serial.println(sensor); // print the happy message
     }
     else
     {                                                                   // if the sensor starts incorrectly
@@ -40,46 +38,46 @@ void setup()
         while (1)
             ; // halt!
     }
+}
 
-    pinMode(redpin, OUTPUT);   // set redpin for output
-    pinMode(greenpin, OUTPUT); // set greenpin for output
-    pinMode(bluepin, OUTPUT);  // set bluepin for output
+uint16_t *tcs_read(sensors sensor)
+{
 
-    // thanks PhilB for this gamma table!
-    // it helps convert RGB colors to what humans see
-    for (int i = 0; i < 256; i++)
-    {
-        float x = i;
-        x /= 255;
-        x = pow(x, 2.5);
-        x *= 255;
+    tca_select(sensor);
 
-        if (commonAnode)
-        {
-            gammatable[i] = 255 - x;
-        }
-        else
-        {
-            gammatable[i] = x;
-        }
-        // Serial.println(gammatable[i]);
-    }
+    uint16_t clear, red, green, blue;
+
+    color_sensors[sensor].setInterrupt(false);
+    delay(60);
+    color_sensors[sensor]
+        .getRawData(&red, &green, &blue, &clear);
+    color_sensors[sensor].setInterrupt(true);
+    color_sensors[sensor].getRawData(&red, &green, &blue, &clear);
+
+    uint16_t crgb[] = {clear, red, green, blue};
+
+    return crgb;
+}
+
+void setup()
+{
+    Serial.begin(9600);                // Sart serial comms @ 9600 (you can change this)
+    Serial.println("Color View Test"); // Title info
+
+    // Set up color sensors
+    sensor_setup(left_color);
+    sensor_setup(right_color);
 }
 
 void loop()
 {
 
-    delay(1000); // wait for 1000ms
+    uint16_t *crgb = tcs_read(left_color);
 
-    uint16_t clear, red, green, blue; // declare variables for the colors
-
-    tcs.setInterrupt(false); // turn on LED
-
-    delay(60); // takes 50ms to read
-
-    tcs.getRawData(&red, &green, &blue, &clear); // read the sensor
-
-    tcs.setInterrupt(true); // turn off LED
+    uint16_t clear = crgb[0];
+    uint16_t red = crgb[1];
+    uint16_t green = crgb[2];
+    uint16_t blue = crgb[3];
 
     Serial.print("C:\t");
     Serial.print(clear); // print color values
