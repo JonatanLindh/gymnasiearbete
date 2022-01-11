@@ -24,23 +24,13 @@ enum sensors
 
 Adafruit_TCS34725 color_sensors[] = {Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X), Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X)};
 
-void sensor_setup(sensors sensor)
+bool sensor_setup(uint8_t sensor)
 {
     tca_select(sensor);
-    if (color_sensors[sensor].begin())
-    { // if the sensor starts correctly
-        Serial.print("Found sensor: ");
-        Serial.println(sensor); // print the happy message
-    }
-    else
-    {                                                                   // if the sensor starts incorrectly
-        Serial.println("No TCS34725 found ... check your connections"); // print the not so happy message
-        while (1)
-            ; // halt!
-    }
+    return color_sensors[sensor].begin();
 }
 
-uint16_t *tcs_read(sensors sensor)
+uint16_t *tcs_read(uint8_t sensor)
 {
 
     tca_select(sensor);
@@ -65,8 +55,16 @@ void setup()
     Serial.println("Color View Test"); // Title info
 
     // Set up color sensors
-    sensor_setup(left_color);
-    sensor_setup(right_color);
+    if (sensor_setup(left_color))
+    { // if the sensor starts correctly
+        Serial.print("Found sensor: ");
+    }
+    else
+    {                                                                   // if the sensor starts incorrectly
+        Serial.println("No TCS34725 found ... check your connections"); // print the not so happy message
+        while (1)
+            ; // halt!
+    }
 }
 
 void loop()
