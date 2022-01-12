@@ -1,126 +1,84 @@
+#include "TCS34725_Color_Sensor.h"
 #include <Wire.h>
-#include <Adafruit_TCS34725.h>
-
-byte gammatable[256]; // our RGB -> eye-recognized gamma color
 
 #define TCAADDR 0x70
+#define CSLAddr 0
+#define CSRAddr 1
+#define CSMAddr 2
 
-void tca_select(uint8_t i)
-{
-    if (i > 7)
-        return;
-
-    Wire.beginTransmission(TCAADDR);
-    Wire.write(1 << i);
-    Wire.endTransmission();
-}
-
-// Create an instance of the TCS34725 Sensor
-enum sensors
-{
-    left_color,
-    right_color,
-};
-
-Adafruit_TCS34725 color_sensors[] = {Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X), Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X)};
-
-bool sensor_setup(uint8_t sensor)
-{
-    tca_select(sensor);
-    return color_sensors[sensor].begin();
-}
-
-uint16_t *tcs_read(uint8_t sensor)
-{
-
-    tca_select(sensor);
-
-    uint16_t clear, red, green, blue;
-
-    color_sensors[sensor].setInterrupt(false);
-    delay(60);
-    color_sensors[sensor]
-        .getRawData(&red, &green, &blue, &clear);
-    color_sensors[sensor].setInterrupt(true);
-    color_sensors[sensor].getRawData(&red, &green, &blue, &clear);
-
-    uint16_t crgb[] = {clear, red, green, blue};
-
-    return crgb;
-}
+TCS34725_I2C_ColorSensor colorSensorL;
+TCS34725_I2C_ColorSensor colorSensorR;
+TCS34725_I2C_ColorSensor colorSensorM;
 
 void setup()
 {
-    Serial.begin(9600);                // Sart serial comms @ 9600 (you can change this)
-    Serial.println("Color View Test"); // Title info
+    Wire.begin();
+    Serial.begin(9600);
+    while (!Serial)
+        ;
 
-    // Set up color sensors
-    if (sensor_setup(left_color))
-    { // if the sensor starts correctly
-        Serial.print("Found sensor: ");
-    }
-    else
-    {                                                                   // if the sensor starts incorrectly
-        Serial.println("No TCS34725 found ... check your connections"); // print the not so happy message
-        while (1)
-            ; // halt!
-    }
+    Serial.println("Setting Left Sensor to 125ms integration time and 4x gain");
+    tcaSelect(CSLAddr);
+    colorSensorL.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X); // Set up color sensor
+    Serial.print("Integration Time: ");
+    Serial.println((uint8_t)colorSensorL.GetIntegrationTime(), HEX);
+
+    Serial.println("Setting Right Sensor to 125ms integration time and 4x gain");
+    tcaSelect(CSRAddr);
+    colorSensorR.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X); // Set up color sensor
+
+    Serial.println("Setting Middle Sensor to 125ms integration time and 4x gain");
+    tcaSelect(CSMAddr);
+    colorSensorM.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X); // Set up color sensor
 }
 
 void loop()
 {
+    // put your main code here, to run repeatedly:
+    Serial.println("Testing Left Sensor");
+    tcaSelect(CSLAddr);
+    // delay(1);
+    Serial.print("Integration Time: ");
+    Serial.println((uint8_t)colorSensorL.GetIntegrationTime(), HEX);
 
-    uint16_t *crgb = tcs_read(left_color);
+    ReadColorSensor("COLORL", colorSensorL);
 
-    uint16_t clear = crgb[0];
-    uint16_t red = crgb[1];
-    uint16_t green = crgb[2];
-    uint16_t blue = crgb[3];
+    Serial.println("Testing Right Sensor");
+    tcaSelect(CSRAddr);
+    // delay(1);
+    ReadColorSensor("COLORR", colorSensorR);
 
-    Serial.print("C:\t");
-    Serial.print(clear); // print color values
-    Serial.print("\tR:\t");
-    Serial.print(red);
-    Serial.print("\tG:\t");
-    Serial.print(green);
-    Serial.print("\tB:\t");
-    Serial.println(blue);
+    Serial.println("Testing Middle Sensor");
+    tcaSelect(CSMAddr);
+    // delay(1);
+    ReadColorSensor("COLORR", colorSensorM);
+    delay(3000);
+}
 
-    // Figure out some basic hex code for visualization
-    uint32_t sum = clear;
-    float r, g, b;
-    r = red;
-    r /= sum;
-    g = green;
-    g /= sum;
-    b = blue;
-    b /= sum;
-    r *= 256;
-    g *= 256;
-    b *= 256;
+void tcaSelect(uint8_t addr)
+{
+    Wire.beginTransmission(TCAADDR);
+    Wire.write(1 << addr);
+    Wire.endTransmission();
+}
 
-    if ((r / g > 0.85 && r / g <= 1.25) && (r / b > 0.85 && r / b <= 1.25) && (g / b > 0.85 && g / b <= 1.25))
-    {
-        if (clear <= 3000) // Ändra baserat på distans
-        {
-            Serial.println("Black");
-        }
-        else if (clear > 3000 && clear <= 14000) // Ändra baserat på distans
-        {
-            Serial.println("Silver");
-        }
-        else
-        {
-            Serial.println("White");
-        }
-    }
-    else if (g / r > 1.4 && g / b > 1.4)
-    {
-        Serial.println("Green");
-    }
-    else if (r / g > 1.4 && r / b > 1.4)
-    {
-        Serial.println("Red");
-    }
-    Serial.println();
+//*******************************************
+// Color Sensor code
+//*******************************************
+void ReadColorSensor(String tag, TCS34725_I2C_ColorSensor &colorSensor)
+{
+    uint16_t r, g, b, c;
+
+    colorSensor.Read();
+    r = colorSensor.GetRed();
+    g = colorSensor.GetGreen();
+    b = colorSensor.GetBlue();
+    Serial.print(tag + " ");
+    Serial.print(r);
+    Serial.print(" ");
+    Serial.print(g);
+    Serial.print(" ");
+    Serial.print(b);
+    Serial.print(" ");
+    Serial.println(c);
 }
