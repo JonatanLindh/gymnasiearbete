@@ -1,2 +1,4 @@
 .idea
 /robot/build
+.vscode
+/robot/.vscode
