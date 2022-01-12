@@ -1,19 +1,22 @@
 #include "TCS34725_Color_Sensor.h"
 #include <Wire.h>
 
-// Multiplexer settings
+//* Multiplexer settings
 #define TCAADDR 0x70
 #define CSLAddr 0
 #define CSRAddr 1
 #define CSMAddr 2
 
-// Left Motor Pins
-#define MOTOR_L_EN_PIN 9
+//* Motor Settings
+#define MotorSpeed 255 //! 0-255
+
+//* Left Motor Pins
+#define MOTOR_L_EN_PIN 9 //! PWM
 #define MOTOR_L_PIN1 7
 #define MOTOR_L_PIN2 8
 
-// Right Motor Pins
-#define MOTOR_R_EN_PIN 3
+//* Right Motor Pins
+#define MOTOR_R_EN_PIN 3 //! PWM
 #define MOTOR_R_PIN1 2
 #define MOTOR_R_PIN2 4
 
@@ -164,8 +167,8 @@ void loop()
     Serial.println();
 
     // Move the robot
-    rightMotor.start(Motor::Forward, 255);
-    leftMotor.start(Motor::Forward, 255);
+    rightMotor.start(Motor::Forward, MotorSpeed);
+    leftMotor.start(Motor::Forward, MotorSpeed);
 
     delay(3000);
 }
