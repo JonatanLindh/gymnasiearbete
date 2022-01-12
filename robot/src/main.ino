@@ -5,38 +5,6 @@
 #define CSLAddr 0
 #define CSRAddr 1
 #define CSMAddr 2
-
-ColorSensor colorSensorL = ColorSensor("Left", CSLAddr);
-ColorSensor colorSensorR = ColorSensor("Right", CSRAddr);
-ColorSensor colorSensorM = ColorSensor("Middle", CSMAddr);
-
-void setup()
-{
-    Wire.begin();
-
-    Serial.begin(9600);
-    while (!Serial)
-        ;
-
-    colorSensorL.setup();
-    colorSensorR.setup();
-    colorSensorM.setup();
-}
-
-void loop()
-{
-
-    colorSensorL.read();
-    colorSensorR.read();
-    colorSensorM.read();
-
-    colorSensorL.print();
-    colorSensorR.print();
-    colorSensorM.print();
-
-    delay(3000);
-}
-
 class ColorSensor
 {
 public:
@@ -96,3 +64,34 @@ private:
         Wire.endTransmission();
     }
 };
+
+ColorSensor colorSensorL = ColorSensor("Left", CSLAddr);
+ColorSensor colorSensorR = ColorSensor("Right", CSRAddr);
+ColorSensor colorSensorM = ColorSensor("Middle", CSMAddr);
+
+void setup()
+{
+    Wire.begin();
+
+    Serial.begin(9600);
+    while (!Serial)
+        ;
+
+    colorSensorL.setup();
+    colorSensorR.setup();
+    colorSensorM.setup();
+}
+
+void loop()
+{
+
+    colorSensorL.read();
+    colorSensorR.read();
+    colorSensorM.read();
+
+    colorSensorL.print();
+    colorSensorR.print();
+    colorSensorM.print();
+
+    delay(3000);
+}
