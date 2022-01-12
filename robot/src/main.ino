@@ -164,8 +164,8 @@ void loop()
     Serial.println();
 
     // Move the robot
-    rightMotor.start(Motor::Forward, 9);
-    leftMotor.start(Motor::Forward, 9);
+    rightMotor.start(Motor::Forward, 255);
+    leftMotor.start(Motor::Forward, 255);
 
     delay(3000);
 }
