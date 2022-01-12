@@ -106,7 +106,6 @@ public:
         int high, low;
 
         if (direction == Forward)
-        // if (dir)
         {
             high = pin1;
             low = pin2;
