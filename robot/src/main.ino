@@ -92,6 +92,7 @@ void loop()
     colorSensorL.print();
     colorSensorR.print();
     colorSensorM.print();
+    Serial.println();
 
     delay(3000);
 }
