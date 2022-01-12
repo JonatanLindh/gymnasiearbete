@@ -6,79 +6,93 @@
 #define CSRAddr 1
 #define CSMAddr 2
 
-TCS34725_I2C_ColorSensor colorSensorL;
-TCS34725_I2C_ColorSensor colorSensorR;
-TCS34725_I2C_ColorSensor colorSensorM;
+ColorSensor colorSensorL = ColorSensor("Left", CSLAddr);
+ColorSensor colorSensorR = ColorSensor("Right", CSRAddr);
+ColorSensor colorSensorM = ColorSensor("Middle", CSMAddr);
 
 void setup()
 {
     Wire.begin();
+
     Serial.begin(9600);
     while (!Serial)
         ;
 
-    Serial.println("Setting Left Sensor to 125ms integration time and 4x gain");
-    tcaSelect(CSLAddr);
-    colorSensorL.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X); // Set up color sensor
-    Serial.print("Integration Time: ");
-    Serial.println((uint8_t)colorSensorL.GetIntegrationTime(), HEX);
-
-    Serial.println("Setting Right Sensor to 125ms integration time and 4x gain");
-    tcaSelect(CSRAddr);
-    colorSensorR.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X); // Set up color sensor
-
-    Serial.println("Setting Middle Sensor to 125ms integration time and 4x gain");
-    tcaSelect(CSMAddr);
-    colorSensorM.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X); // Set up color sensor
+    colorSensorL.setup();
+    colorSensorR.setup();
+    colorSensorM.setup();
 }
 
 void loop()
 {
-    // put your main code here, to run repeatedly:
-    Serial.println("Testing Left Sensor");
-    tcaSelect(CSLAddr);
-    // delay(1);
-    Serial.print("Integration Time: ");
-    Serial.println((uint8_t)colorSensorL.GetIntegrationTime(), HEX);
 
-    ReadColorSensor("COLORL", colorSensorL);
+    colorSensorL.read();
+    colorSensorR.read();
+    colorSensorM.read();
 
-    Serial.println("Testing Right Sensor");
-    tcaSelect(CSRAddr);
-    // delay(1);
-    ReadColorSensor("COLORR", colorSensorR);
+    colorSensorL.print();
+    colorSensorR.print();
+    colorSensorM.print();
 
-    Serial.println("Testing Middle Sensor");
-    tcaSelect(CSMAddr);
-    // delay(1);
-    ReadColorSensor("COLORR", colorSensorM);
     delay(3000);
 }
 
-void tcaSelect(uint8_t addr)
+class ColorSensor
 {
-    Wire.beginTransmission(TCAADDR);
-    Wire.write(1 << addr);
-    Wire.endTransmission();
-}
-
-//*******************************************
-// Color Sensor code
-//*******************************************
-void ReadColorSensor(String tag, TCS34725_I2C_ColorSensor &colorSensor)
-{
+public:
     uint16_t r, g, b, c;
+    TCS34725_I2C_ColorSensor sensor;
+    uint8_t addr;
+    String tag;
 
-    colorSensor.Read();
-    r = colorSensor.GetRed();
-    g = colorSensor.GetGreen();
-    b = colorSensor.GetBlue();
-    Serial.print(tag + " ");
-    Serial.print(r);
-    Serial.print(" ");
-    Serial.print(g);
-    Serial.print(" ");
-    Serial.print(b);
-    Serial.print(" ");
-    Serial.println(c);
-}
+    ColorSensor(String sensor_name, uint16_t multiplexer_addr)
+    {
+        r = 0;
+        g = 0;
+        b = 0;
+        c = 0;
+        addr = multiplexer_addr;
+        tag = sensor_name;
+    }
+
+    // setup the sensor
+    void setup()
+    {
+        tcaSelect(addr);
+        sensor.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X);
+    }
+
+    // Reads the color sensor and stores the results
+    void read()
+    {
+        tcaSelect(addr);
+
+        sensor.Read();
+        r = sensor.GetRed();
+        g = sensor.GetGreen();
+        b = sensor.GetBlue();
+        c = sensor.GetClear();
+    }
+
+    // Prints the results
+    void print()
+    {
+        Serial.print(tag + " ");
+        Serial.print(r);
+        Serial.print(" ");
+        Serial.print(g);
+        Serial.print(" ");
+        Serial.print(b);
+        Serial.print(" ");
+        Serial.println(c);
+    }
+
+private:
+    // Selects the multiplexer address
+    static void tcaSelect(uint8_t addr)
+    {
+        Wire.beginTransmission(TCAADDR);
+        Wire.write(1 << addr);
+        Wire.endTransmission();
+    }
+};
