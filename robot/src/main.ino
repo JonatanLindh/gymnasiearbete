@@ -5,6 +5,7 @@
 #define CSLAddr 0
 #define CSRAddr 1
 #define CSMAddr 2
+
 class ColorSensor
 {
 public:
