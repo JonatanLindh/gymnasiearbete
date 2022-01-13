@@ -11,14 +11,14 @@
 #define MotorSpeed 255 //! 0-255
 
 //* Left Motor Pins
-#define MOTOR_L_EN_PIN 9 //! PWM
-#define MOTOR_L_PIN1 7
-#define MOTOR_L_PIN2 8
+#define MOTOR_L_EN_PIN 6 //! PWM
+#define MOTOR_L_PIN1 48
+#define MOTOR_L_PIN2 46
 
 //* Right Motor Pins
-#define MOTOR_R_EN_PIN 3 //! PWM
-#define MOTOR_R_PIN1 2
-#define MOTOR_R_PIN2 4
+#define MOTOR_R_EN_PIN 4 //! PWM
+#define MOTOR_R_PIN1 44
+#define MOTOR_R_PIN2 42
 
 class ColorSensor
 {
