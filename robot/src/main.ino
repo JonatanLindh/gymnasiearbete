@@ -3,8 +3,8 @@
 
 //* Multiplexer settings
 #define TCAADDR 0x70
-#define CSLAddr 0
-#define CSRAddr 1
+#define CSLAddr 7
+#define CSRAddr 6
 #define CSMAddr 2
 
 //* Motor Settings
@@ -104,7 +104,7 @@ public:
         pinMode(pin2, OUTPUT);
     }
 
-    void start(Direction direction, int motor_speed)
+    void start(Direction direction)
     {
         int high, low;
 
@@ -120,7 +120,7 @@ public:
             low = pin1;
         }
 
-        analogWrite(enPin, motor_speed);
+        analogWrite(enPin, MotorSpeed);
 
         digitalWrite(low, LOW);
         digitalWrite(high, HIGH);
@@ -165,10 +165,25 @@ void loop()
     colorSensorR.print();
     colorSensorM.print();
     Serial.println();
+    delay(2000);
 
-    // Move the robot
-    rightMotor.start(Motor::Forward, MotorSpeed);
-    leftMotor.start(Motor::Forward, MotorSpeed);
+    // // Move the robot forwards
+    // rightMotor.start(Motor::Forward);
+    // leftMotor.start(Motor::Forward);
+    // delay(3000);
 
-    delay(3000);
+    // // Move the robot backwards
+    // rightMotor.start(Motor::Backward);
+    // leftMotor.start(Motor::Backward);
+    // delay(3000);
+
+    // // Only Left motor
+    // rightMotor.stop();
+    // leftMotor.start(Motor::Forward);
+    // delay(3000);
+
+    // // Only Right motor
+    // rightMotor.start(Motor::Forward);
+    // leftMotor.stop();
+    // delay(3000);
 }
