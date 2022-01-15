@@ -1,29 +1,43 @@
 #include "TCS34725_Color_Sensor.h"
 #include <Wire.h>
 
+#define cBlack 6500
+
 //* Multiplexer settings
 #define TCAADDR 0x70
 #define CSLAddr 7
-#define CSRAddr 6
-#define CSMAddr 2
+#define CSRAddr 2
+#define CSMAddr 6
 
 //* Motor Settings
-#define MotorSpeed 255 //! 0-255
+#define MotorSpeed 200       //! 0-255
+#define MotorSpeedSlower 118 //! 0-255
 
 //* Left Motor Pins
 #define MOTOR_L_EN_PIN 6 //! PWM
-#define MOTOR_L_PIN1 48
-#define MOTOR_L_PIN2 46
+#define MOTOR_L_PIN1 46
+#define MOTOR_L_PIN2 48
 
 //* Right Motor Pins
 #define MOTOR_R_EN_PIN 4 //! PWM
-#define MOTOR_R_PIN1 44
-#define MOTOR_R_PIN2 42
+#define MOTOR_R_PIN1 42
+#define MOTOR_R_PIN2 44
+
+enum Direction : int
+{
+    Forward,
+    Backward,
+    Left,
+    Right,
+    Stop,
+};
 
 class ColorSensor
 {
 public:
     uint16_t r, g, b, c;
+    boolean isBlack = false;
+    boolean isGreen = false;
     TCS34725_I2C_ColorSensor sensor;
     uint8_t addr;
     String tag;
@@ -55,6 +69,15 @@ public:
         g = sensor.GetGreen();
         b = sensor.GetBlue();
         c = sensor.GetClear();
+
+        if (c < cBlack)
+        {
+            isBlack = true;
+        }
+        else
+        {
+            isBlack = false;
+        }
     }
 
     // Prints the results
@@ -92,19 +115,13 @@ public:
         pin2 = pin2Num;
     }
 
-    enum Direction : int
-    {
-        Forward,
-        Backward,
-    };
-
     void setup()
     {
         pinMode(pin1, OUTPUT);
         pinMode(pin2, OUTPUT);
     }
 
-    void start(Direction direction)
+    void start(Direction direction, int motor_speed)
     {
         int high, low;
 
@@ -120,7 +137,7 @@ public:
             low = pin1;
         }
 
-        analogWrite(enPin, MotorSpeed);
+        analogWrite(enPin, motor_speed);
 
         digitalWrite(low, LOW);
         digitalWrite(high, HIGH);
@@ -165,25 +182,35 @@ void loop()
     colorSensorR.print();
     colorSensorM.print();
     Serial.println();
-    delay(2000);
 
-    // // Move the robot forwards
-    // rightMotor.start(Motor::Forward);
-    // leftMotor.start(Motor::Forward);
-    // delay(3000);
-
-    // // Move the robot backwards
-    // rightMotor.start(Motor::Backward);
-    // leftMotor.start(Motor::Backward);
-    // delay(3000);
-
-    // // Only Left motor
-    // rightMotor.stop();
-    // leftMotor.start(Motor::Forward);
-    // delay(3000);
-
-    // // Only Right motor
-    // rightMotor.start(Motor::Forward);
-    // leftMotor.stop();
-    // delay(3000);
+    if (!colorSensorL.isBlack && colorSensorM.isBlack && !colorSensorR.isBlack)
+    {
+        leftMotor.start(Forward, MotorSpeed);
+        rightMotor.start(Forward, MotorSpeed);
+    }
+    else if (colorSensorL.isBlack && colorSensorM.isBlack)
+    {
+        leftMotor.stop();
+        rightMotor.start(Forward, MotorSpeedSlower);
+    }
+    else if (colorSensorL.isBlack && !colorSensorM.isBlack)
+    {
+        leftMotor.stop();
+        rightMotor.start(Forward, MotorSpeedSlower + 30);
+    }
+    else if (colorSensorM.isBlack, colorSensorR.isBlack)
+    {
+        leftMotor.start(Forward, MotorSpeedSlower);
+        rightMotor.stop();
+    }
+    else if (!colorSensorM.isBlack, colorSensorR.isBlack)
+    {
+        leftMotor.start(Forward, MotorSpeedSlower + 30);
+        rightMotor.stop();
+    }
+    else
+    {
+        leftMotor.stop();
+        rightMotor.stop();
+    }
 }
