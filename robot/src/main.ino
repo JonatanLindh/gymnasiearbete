@@ -56,7 +56,7 @@ public:
     void setup()
     {
         tcaSelect(addr);
-        sensor.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X);
+        sensor.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_24_MS, TCS34725_RGBCGain::GAIN_4_X);
     }
 
     // Reads the color sensor and stores the results
@@ -157,6 +157,8 @@ ColorSensor colorSensorL = ColorSensor("Left", CSLAddr);
 ColorSensor colorSensorR = ColorSensor("Right", CSRAddr);
 ColorSensor colorSensorM = ColorSensor("Middle", CSMAddr);
 
+unsigned long time_black_reading = millis();
+
 void setup()
 {
     Wire.begin();
@@ -183,34 +185,46 @@ void loop()
     colorSensorM.print();
     Serial.println();
 
-    if (!colorSensorL.isBlack && colorSensorM.isBlack && !colorSensorR.isBlack)
-    {
-        leftMotor.start(Forward, MotorSpeed);
-        rightMotor.start(Forward, MotorSpeed);
-    }
-    else if (colorSensorL.isBlack && colorSensorM.isBlack)
-    {
-        leftMotor.stop();
-        rightMotor.start(Forward, MotorSpeedSlower);
-    }
-    else if (colorSensorL.isBlack && !colorSensorM.isBlack)
-    {
-        leftMotor.stop();
-        rightMotor.start(Forward, MotorSpeedSlower + 30);
-    }
-    else if (colorSensorM.isBlack, colorSensorR.isBlack)
-    {
-        leftMotor.start(Forward, MotorSpeedSlower);
-        rightMotor.stop();
-    }
-    else if (!colorSensorM.isBlack, colorSensorR.isBlack)
-    {
-        leftMotor.start(Forward, MotorSpeedSlower + 30);
-        rightMotor.stop();
-    }
-    else
-    {
-        leftMotor.stop();
-        rightMotor.stop();
-    }
+    delay(2000);
+
+    // if (colorSensorL.isBlack || colorSensorM.isBlack || colorSensorR.isBlack)
+    // {
+    //     time_black_reading = millis();
+    // }
+
+    // if (!colorSensorL.isBlack && colorSensorM.isBlack && !colorSensorR.isBlack)
+    // {
+    //     leftMotor.start(Forward, MotorSpeed);
+    //     rightMotor.start(Forward, MotorSpeed);
+    // }
+    // else if (colorSensorL.isBlack && !colorSensorM.isBlack)
+    // {
+    //     leftMotor.stop();
+    //     rightMotor.start(Forward, MotorSpeedSlower);
+    // }
+    // else if (colorSensorL.isBlack && colorSensorM.isBlack)
+    // {
+    //     leftMotor.stop();
+    //     rightMotor.start(Forward, MotorSpeedSlower + 30);
+    // }
+    // else if (!colorSensorM.isBlack, colorSensorR.isBlack)
+    // {
+    //     leftMotor.start(Forward, MotorSpeedSlower);
+    //     rightMotor.stop();
+    // }
+    // else if (colorSensorM.isBlack, colorSensorR.isBlack)
+    // {
+    //     leftMotor.start(Forward, MotorSpeedSlower + 30);
+    //     rightMotor.stop();
+    // }
+    // else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
+    // {
+    //     leftMotor.start(Forward, MotorSpeed);
+    //     rightMotor.start(Forward, MotorSpeed);
+    // }
+    // else
+    // {
+    //     leftMotor.stop();
+    //     rightMotor.stop();
+    // }
 }
