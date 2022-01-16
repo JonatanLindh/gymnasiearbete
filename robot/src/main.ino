@@ -1,7 +1,7 @@
 #include "TCS34725_Color_Sensor.h"
 #include <Wire.h>
 
-#define cBlack 6500
+#define cBlack 1650
 
 //* Multiplexer settings
 #define TCAADDR 0x70
@@ -187,44 +187,44 @@ void loop()
 
     delay(2000);
 
-    // if (colorSensorL.isBlack || colorSensorM.isBlack || colorSensorR.isBlack)
-    // {
-    //     time_black_reading = millis();
-    // }
+    if (colorSensorL.isBlack || colorSensorM.isBlack || colorSensorR.isBlack)
+    {
+        time_black_reading = millis();
+    }
 
-    // if (!colorSensorL.isBlack && colorSensorM.isBlack && !colorSensorR.isBlack)
-    // {
-    //     leftMotor.start(Forward, MotorSpeed);
-    //     rightMotor.start(Forward, MotorSpeed);
-    // }
-    // else if (colorSensorL.isBlack && !colorSensorM.isBlack)
-    // {
-    //     leftMotor.stop();
-    //     rightMotor.start(Forward, MotorSpeedSlower);
-    // }
-    // else if (colorSensorL.isBlack && colorSensorM.isBlack)
-    // {
-    //     leftMotor.stop();
-    //     rightMotor.start(Forward, MotorSpeedSlower + 30);
-    // }
-    // else if (!colorSensorM.isBlack, colorSensorR.isBlack)
-    // {
-    //     leftMotor.start(Forward, MotorSpeedSlower);
-    //     rightMotor.stop();
-    // }
-    // else if (colorSensorM.isBlack, colorSensorR.isBlack)
-    // {
-    //     leftMotor.start(Forward, MotorSpeedSlower + 30);
-    //     rightMotor.stop();
-    // }
-    // else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
-    // {
-    //     leftMotor.start(Forward, MotorSpeed);
-    //     rightMotor.start(Forward, MotorSpeed);
-    // }
-    // else
-    // {
-    //     leftMotor.stop();
-    //     rightMotor.stop();
-    // }
+    if (!colorSensorL.isBlack && colorSensorM.isBlack && !colorSensorR.isBlack)
+    {
+        leftMotor.start(Forward, MotorSpeed);
+        rightMotor.start(Forward, MotorSpeed);
+    }
+    else if (colorSensorL.isBlack && !colorSensorM.isBlack)
+    {
+        leftMotor.stop();
+        rightMotor.start(Forward, MotorSpeedSlower);
+    }
+    else if (colorSensorL.isBlack && colorSensorM.isBlack)
+    {
+        leftMotor.stop();
+        rightMotor.start(Forward, MotorSpeedSlower + 30);
+    }
+    else if (!colorSensorM.isBlack, colorSensorR.isBlack)
+    {
+        leftMotor.start(Forward, MotorSpeedSlower);
+        rightMotor.stop();
+    }
+    else if (colorSensorM.isBlack, colorSensorR.isBlack)
+    {
+        leftMotor.start(Forward, MotorSpeedSlower + 30);
+        rightMotor.stop();
+    }
+    else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
+    {
+        leftMotor.start(Forward, MotorSpeed);
+        rightMotor.start(Forward, MotorSpeed);
+    }
+    else
+    {
+        leftMotor.stop();
+        rightMotor.stop();
+    }
 }
