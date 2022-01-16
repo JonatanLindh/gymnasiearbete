@@ -12,7 +12,7 @@
 //* Motor Settings
 #define MotorSpeed 130       //! 0-255
 #define MotorSpeedSlower 130 //! 0-255
-#define MotorSpeedSlowerBackModifier 0
+#define MotorSpeedSlowerBackModifier -10
 
 //* Left Motor Pins
 #define MOTOR_L_EN_PIN 6 //! PWM

@@ -1,28 +1,24 @@
 #include "TCS34725_Color_Sensor.h"
 #include <Wire.h>
 
-#define cBlack 1650
-
 //* Multiplexer settings
 #define TCAADDR 0x70
-#define CSLAddr 7
-#define CSRAddr 2
-#define CSMAddr 6
+#define CSLAddr 6
+#define CSRAddr 7
+#define CSMAddr 2
 
 //* Motor Settings
-#define MotorSpeed 130       //! 0-255
-#define MotorSpeedSlower 130 //! 0-255
-#define MotorSpeedSlowerBackModifier 0
+#define MotorSpeed 100 //! 0-255
 
 //* Left Motor Pins
-#define MOTOR_L_EN_PIN 6 //! PWM
-#define MOTOR_L_PIN1 46
-#define MOTOR_L_PIN2 48
+#define MOTOR_L_EN_PIN 9 //! PWM
+#define MOTOR_L_PIN1 7
+#define MOTOR_L_PIN2 8
 
 //* Right Motor Pins
-#define MOTOR_R_EN_PIN 4 //! PWM
-#define MOTOR_R_PIN1 42
-#define MOTOR_R_PIN2 44
+#define MOTOR_R_EN_PIN 3 //! PWM
+#define MOTOR_R_PIN1 2
+#define MOTOR_R_PIN2 4
 
 enum Direction : int
 {
@@ -30,15 +26,12 @@ enum Direction : int
     Backward,
     Left,
     Right,
-    Stop,
 };
 
 class ColorSensor
 {
 public:
     uint16_t r, g, b, c;
-    boolean isBlack = false;
-    boolean isGreen = false;
     TCS34725_I2C_ColorSensor sensor;
     uint8_t addr;
     String tag;
@@ -57,7 +50,7 @@ public:
     void setup()
     {
         tcaSelect(addr);
-        sensor.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_24_MS, TCS34725_RGBCGain::GAIN_4_X);
+        sensor.Setup(TCS34725_IntegrationTime::INTEGRATION_TIME_125_MS, TCS34725_RGBCGain::GAIN_4_X);
     }
 
     // Reads the color sensor and stores the results
@@ -70,15 +63,6 @@ public:
         g = sensor.GetGreen();
         b = sensor.GetBlue();
         c = sensor.GetClear();
-
-        if (c < cBlack)
-        {
-            isBlack = true;
-        }
-        else
-        {
-            isBlack = false;
-        }
     }
 
     // Prints the results
@@ -151,14 +135,36 @@ public:
     }
 };
 
-Motor leftMotor = Motor(MOTOR_L_EN_PIN, MOTOR_L_PIN1, MOTOR_L_PIN2);
-Motor rightMotor = Motor(MOTOR_R_EN_PIN, MOTOR_R_PIN1, MOTOR_R_PIN2);
+void drive(Direction direction)
+{
+    Motor leftMotor = Motor(MOTOR_L_EN_PIN, MOTOR_L_PIN1, MOTOR_L_PIN2);
+    Motor rightMotor = Motor(MOTOR_R_EN_PIN, MOTOR_R_PIN1, MOTOR_R_PIN2);
+
+    if (direction == Forward)
+    {
+        rightMotor.start(Forward, MotorSpeed);
+        leftMotor.start(Forward, MotorSpeed);
+    }
+    else if (direction == Backward)
+    {
+        rightMotor.start(Backward, MotorSpeed);
+        leftMotor.start(Backward, MotorSpeed);
+    }
+    else if (direction == Left)
+    {
+        rightMotor.start(Backward, MotorSpeed);
+        leftMotor.start(Forward, MotorSpeed);
+    }
+    else if (direction == Right)
+    {
+        rightMotor.start(Forward, MotorSpeed);
+        leftMotor.start(Backward, MotorSpeed);
+    }
+}
 
 ColorSensor colorSensorL = ColorSensor("Left", CSLAddr);
 ColorSensor colorSensorR = ColorSensor("Right", CSRAddr);
 ColorSensor colorSensorM = ColorSensor("Middle", CSMAddr);
-
-unsigned long time_black_reading = millis();
 
 void setup()
 {
@@ -186,48 +192,11 @@ void loop()
     colorSensorM.print();
     Serial.println();
 
-    if (colorSensorL.isBlack || colorSensorM.isBlack || colorSensorR.isBlack)
-    {
-        time_black_reading = millis();
-    }
-
-    if (!colorSensorL.isBlack && colorSensorM.isBlack && !colorSensorR.isBlack)
-    {
-        leftMotor.start(Forward, MotorSpeed);
-        rightMotor.start(Forward, MotorSpeed);
-    }
-    else if (colorSensorL.isBlack && !colorSensorM.isBlack)
-    {
-        leftMotor.start(Backward, MotorSpeedSlower - MotorSpeedSlowerBackModifier);
-        rightMotor.start(Forward, MotorSpeedSlower);
-        delay(300);
-    }
-    else if (colorSensorL.isBlack && colorSensorM.isBlack)
-    {
-        leftMotor.start(Backward, MotorSpeedSlower - MotorSpeedSlowerBackModifier);
-        rightMotor.start(Forward, MotorSpeedSlower);
-        delay(300);
-    }
-    else if (!colorSensorM.isBlack, colorSensorR.isBlack)
-    {
-        leftMotor.start(Forward, MotorSpeedSlower);
-        rightMotor.start(Backward, MotorSpeedSlower - MotorSpeedSlowerBackModifier);
-        delay(300);
-    }
-    else if (colorSensorM.isBlack, colorSensorR.isBlack)
-    {
-        leftMotor.start(Forward, MotorSpeedSlower);
-        rightMotor.start(Backward, MotorSpeedSlower - MotorSpeedSlowerBackModifier);
-        delay(300);
-    }
-    else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
-    {
-        leftMotor.start(Forward, MotorSpeed);
-        rightMotor.start(Forward, MotorSpeed);
-    }
-    else
-    {
-        leftMotor.stop();
-        rightMotor.stop();
-    }
+    // Move the robot
+    drive(Forward);
+    delay(3000);
+    drive(Right);
+    delay(1000);
+    drive(Forward);
+    delay(3000);
 }
