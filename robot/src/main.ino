@@ -10,7 +10,7 @@
 #define CSMAddr 6
 
 //* Motor Settings
-#define MotorSpeed 150       //! 0-255
+#define MotorSpeed 130       //! 0-255
 #define MotorSpeedSlower 150 //! 0-255
 
 //* Left Motor Pins
