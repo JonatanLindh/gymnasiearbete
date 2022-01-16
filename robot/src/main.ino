@@ -11,7 +11,7 @@
 
 //* Motor Settings
 #define MotorSpeed 150       //! 0-255
-#define MotorSpeedSlower 170 //! 0-255
+#define MotorSpeedSlower 150 //! 0-255
 
 //* Left Motor Pins
 #define MOTOR_L_EN_PIN 6 //! PWM
@@ -197,8 +197,9 @@ void loop()
     }
     else if (colorSensorL.isBlack && !colorSensorM.isBlack)
     {
-        leftMotor.stop();
+        leftMotor.start(Backward, MotorSpeedSlower);
         rightMotor.start(Forward, MotorSpeedSlower);
+        delay(300);
     }
     else if (colorSensorL.isBlack && colorSensorM.isBlack)
     {
@@ -209,7 +210,8 @@ void loop()
     else if (!colorSensorM.isBlack, colorSensorR.isBlack)
     {
         leftMotor.start(Forward, MotorSpeedSlower);
-        rightMotor.stop();
+        rightMotor.start(Backward, MotorSpeedSlower);
+        delay(300);
     }
     else if (colorSensorM.isBlack, colorSensorR.isBlack)
     {
