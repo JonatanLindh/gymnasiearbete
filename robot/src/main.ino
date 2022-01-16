@@ -204,7 +204,7 @@ void loop()
     {
         leftMotor.start(Backward, MotorSpeedSlower);
         rightMotor.start(Forward, MotorSpeedSlower + 30);
-        delay(300);
+        // delay(300);
     }
     else if (!colorSensorM.isBlack, colorSensorR.isBlack)
     {
@@ -215,7 +215,7 @@ void loop()
     {
         leftMotor.start(Forward, MotorSpeedSlower + 30);
         rightMotor.start(Backward, MotorSpeedSlower);
-        delay(300);
+        // delay(300);
     }
     else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
     {
