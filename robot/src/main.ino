@@ -185,8 +185,6 @@ void loop()
     colorSensorM.print();
     Serial.println();
 
-    delay(2000);
-
     if (colorSensorL.isBlack || colorSensorM.isBlack || colorSensorR.isBlack)
     {
         time_black_reading = millis();
