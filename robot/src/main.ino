@@ -5,23 +5,36 @@
 
 //* Multiplexer settings
 #define TCAADDR 0x70
-#define CSLAddr 7
-#define CSRAddr 2
+// #define CSLAddr 7
+// #define CSRAddr 2
+#define CSLAddr 2
+#define CSRAddr 7
+
 #define CSMAddr 6
 
 //* Motor Settings
 #define MotorSpeed 200       //! 0-255
 #define MotorSpeedSlower 118 //! 0-255
 
-//* Left Motor Pins
-#define MOTOR_L_EN_PIN 6 //! PWM
-#define MOTOR_L_PIN1 46
-#define MOTOR_L_PIN2 48
+// //* Left Motor Pins
+// #define MOTOR_L_EN_PIN 6 //! PWM
+// #define MOTOR_L_PIN1 46
+// #define MOTOR_L_PIN2 48
+
+// //* Right Motor Pins
+// #define MOTOR_R_EN_PIN 4 //! PWM
+// #define MOTOR_R_PIN1 42
+// #define MOTOR_R_PIN2 44
 
 //* Right Motor Pins
-#define MOTOR_R_EN_PIN 4 //! PWM
-#define MOTOR_R_PIN1 42
-#define MOTOR_R_PIN2 44
+#define MOTOR_R_EN_PIN 6 //! PWM
+#define MOTOR_R_PIN1 48
+#define MOTOR_R_PIN2 46
+
+//* Left Motor Pins
+#define MOTOR_L_EN_PIN 4 //! PWM
+#define MOTOR_L_PIN1 44
+#define MOTOR_L_PIN2 42
 
 enum Direction : int
 {
