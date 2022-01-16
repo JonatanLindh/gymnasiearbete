@@ -197,26 +197,26 @@ void loop()
     }
     else if (colorSensorL.isBlack && !colorSensorM.isBlack)
     {
-        leftMotor.start(Backward, MotorSpeedSlower);
+        leftMotor.start(Backward, MotorSpeedSlower - 20);
         rightMotor.start(Forward, MotorSpeedSlower);
         delay(300);
     }
     else if (colorSensorL.isBlack && colorSensorM.isBlack)
     {
-        leftMotor.start(Backward, MotorSpeedSlower);
+        leftMotor.start(Backward, MotorSpeedSlower - 20);
         rightMotor.start(Forward, MotorSpeedSlower);
         delay(300);
     }
     else if (!colorSensorM.isBlack, colorSensorR.isBlack)
     {
         leftMotor.start(Forward, MotorSpeedSlower);
-        rightMotor.start(Backward, MotorSpeedSlower);
+        rightMotor.start(Backward, MotorSpeedSlower - 20);
         delay(300);
     }
     else if (colorSensorM.isBlack, colorSensorR.isBlack)
     {
         leftMotor.start(Forward, MotorSpeedSlower);
-        rightMotor.start(Backward, MotorSpeedSlower);
+        rightMotor.start(Backward, MotorSpeedSlower - 20);
         delay(300);
     }
     else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
