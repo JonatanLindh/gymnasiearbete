@@ -202,7 +202,7 @@ void loop()
     }
     else if (colorSensorL.isBlack && colorSensorM.isBlack)
     {
-        leftMotor.stop();
+        leftMotor.start(Backward, MotorSpeedSlower);
         rightMotor.start(Forward, MotorSpeedSlower + 30);
     }
     else if (!colorSensorM.isBlack, colorSensorR.isBlack)
@@ -213,7 +213,7 @@ void loop()
     else if (colorSensorM.isBlack, colorSensorR.isBlack)
     {
         leftMotor.start(Forward, MotorSpeedSlower + 30);
-        rightMotor.stop();
+        rightMotor.start(Backward, MotorSpeedSlower);
     }
     else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
     {
