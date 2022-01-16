@@ -10,7 +10,7 @@
 #define CSMAddr 6
 
 //* Motor Settings
-#define MotorSpeed 200       //! 0-255
+#define MotorSpeed 150       //! 0-255
 #define MotorSpeedSlower 150 //! 0-255
 
 //* Left Motor Pins
@@ -204,6 +204,7 @@ void loop()
     {
         leftMotor.start(Backward, MotorSpeedSlower);
         rightMotor.start(Forward, MotorSpeedSlower + 30);
+        delay(300);
     }
     else if (!colorSensorM.isBlack, colorSensorR.isBlack)
     {
@@ -214,6 +215,7 @@ void loop()
     {
         leftMotor.start(Forward, MotorSpeedSlower + 30);
         rightMotor.start(Backward, MotorSpeedSlower);
+        delay(300);
     }
     else if (!colorSensorL.isBlack && !colorSensorM.isBlack && !colorSensorR.isBlack && millis() - time_black_reading < 2000)
     {
